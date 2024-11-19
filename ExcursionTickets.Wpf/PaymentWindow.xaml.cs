@@ -14,6 +14,7 @@ namespace ExcursionTickets.Wpf
         private decimal _price;
         private int _ticketQuantity;
         private decimal _amountPaid;
+        private bool _isCard;
 
         public PaymentWindow(int excursionId, decimal price)
         {
@@ -33,11 +34,13 @@ namespace ExcursionTickets.Wpf
                 {
                     AmountPaidTextBox.Text = _amountPaid.ToString();
                     AmountPaidTextBox.IsEnabled = false;
+                    _isCard = true;
                 }
                 else
                 {
                     AmountPaidTextBox.Text = "";
                     AmountPaidTextBox.IsEnabled = true;
+                    _isCard = false;
                 }
             }
         }
@@ -99,7 +102,7 @@ namespace ExcursionTickets.Wpf
 
             try
             {
-                var CardWindow = new CardWindow(paymentRequest, amountPaid);
+                var CardWindow = new CardWindow(paymentRequest, amountPaid, _isCard);
                 CardWindow.ShowDialog();
                 this.Close();
             }

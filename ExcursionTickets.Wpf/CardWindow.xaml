@@ -4,7 +4,8 @@
         Title="Ввод данных карты" Height="330" Width="400">
     <Grid>
         <StackPanel>
-            <TextBlock Text="Введите данные для оплаты" FontSize="16" Margin="10" HorizontalAlignment="Center"/>
+            <TextBlock Text="Введите данные для оплаты" Name="CardOrCash" FontSize="16" 
+                       Margin="10" HorizontalAlignment="Center"/>
 
             <TextBlock Text="Номер карты:" FontSize="12" Margin="10 0 10 0" HorizontalAlignment="Left"/>
             <TextBox Name="CardNumberTextBox" Margin="10" TextChanged="CardNumberTextBox_TextChanged"/>

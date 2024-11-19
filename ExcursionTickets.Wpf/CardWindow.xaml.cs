@@ -6,6 +6,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 
 namespace ExcursionTickets.Wpf
 {
@@ -16,13 +17,33 @@ namespace ExcursionTickets.Wpf
     {
         private PaymentRequest _paymentRequest;
         private decimal _amountPaid;
-        public CardWindow(PaymentRequest paymentRequest, decimal amountPaid)
+        private bool _isCard;
+        public CardWindow(PaymentRequest paymentRequest, decimal amountPaid, bool isCard)
         {
             InitializeComponent();
             _paymentRequest = paymentRequest;
             _amountPaid = amountPaid;
-
+            _isCard = isCard;
             AmountCardTextBlock.Text = $"К оплате: {_amountPaid}₽";
+
+            ChangeTextBoxStatus(isCard);
+            
+        }
+
+
+        private void ChangeTextBoxStatus(bool isCard)
+        {
+            if(!isCard)
+            {
+                CardNumberTextBox.IsEnabled = false;
+                CardDateTextBox.IsEnabled = false;
+                CardCVCTextBox.IsEnabled = false;
+
+                CardNumberTextBox.Background = new SolidColorBrush(Colors.LightGray); 
+                CardDateTextBox.Background = new SolidColorBrush(Colors.LightGray); ;
+                CardCVCTextBox.Background = new SolidColorBrush(Colors.LightGray); ;
+                CardOrCash.Text = "Оплата наличными на кассе";
+            }
         }
 
         private async void PayButton_Click(object sender, RoutedEventArgs e)
@@ -31,30 +52,33 @@ namespace ExcursionTickets.Wpf
             var cardDate = CardDateTextBox.Text;
             var cardCVC = CardCVCTextBox.Text;
 
-            if (string.IsNullOrEmpty(cardNumber) || string.IsNullOrEmpty(cardDate) || string.IsNullOrEmpty(cardCVC))
+            if (_isCard)
             {
-                MessageBox.Show("Пожалуйста, заполните все поля.");
-                return;
-            }
 
-            if (!Regex.IsMatch(cardNumber, @"^(\d{4} ){3}\d{4}$"))
-            {
-                MessageBox.Show("Введите корректный номер карты (16 цифр).");
-                return;
-            }
+                if (string.IsNullOrEmpty(cardNumber) || string.IsNullOrEmpty(cardDate) || string.IsNullOrEmpty(cardCVC))
+                {
+                    MessageBox.Show("Пожалуйста, заполните все поля.");
+                    return;
+                }
 
-            if (!Regex.IsMatch(cardDate, @"^(0[1-9]|1[0-2])\/\d{2}$"))
-            {
-                MessageBox.Show("Введите корректную дату (MM/YY).");
-                return;
-            }
+                if (!Regex.IsMatch(cardNumber, @"^(\d{4} ){3}\d{4}$"))
+                {
+                    MessageBox.Show("Введите корректный номер карты (16 цифр).");
+                    return;
+                }
 
-            if (!Regex.IsMatch(cardCVC, @"^\d{3}$"))
-            {
-                MessageBox.Show("Введите корректный CVC (3 цифры).");
-                return;
-            }
+                if (!Regex.IsMatch(cardDate, @"^(0[1-9]|1[0-2])\/\d{2}$"))
+                {
+                    MessageBox.Show("Введите корректную дату (MM/YY).");
+                    return;
+                }
 
+                if (!Regex.IsMatch(cardCVC, @"^\d{3}$"))
+                {
+                    MessageBox.Show("Введите корректный CVC (3 цифры).");
+                    return;
+                }
+            }
             try
             {
                 var result = await ProcessPayment(_paymentRequest);
